@@ -26,33 +26,31 @@ public class DatabaseTestRepository implements TestRepository {
     }
 
     private void initializeTables() throws SQLException {
-        String createTestsTable = """
-            CREATE TABLE IF NOT EXISTS tests (
-                issue_id VARCHAR(5) NOT NULL,
-                sub_issue_id VARCHAR(3) NOT NULL,
-                name VARCHAR(255),
-                runner VARCHAR(255),
-                last_result VARCHAR(50),
-                date_last_run VARCHAR(50),
-                date_previous_result VARCHAR(50),
-                file_path VARCHAR(500),
-                comments VARCHAR(1000),
-                test_status VARCHAR(50),
-                PRIMARY KEY (issue_id, sub_issue_id)
-            )
-        """;
+        String createTestsTable =
+            "CREATE TABLE IF NOT EXISTS tests (" +
+                "issue_id VARCHAR(5) NOT NULL, " +
+                "sub_issue_id VARCHAR(3) NOT NULL, " +
+                "name VARCHAR(255), " +
+                "runner VARCHAR(255), " +
+                "last_result VARCHAR(50), " +
+                "date_last_run VARCHAR(50), " +
+                "date_previous_result VARCHAR(50), " +
+                "file_path VARCHAR(500), " +
+                "comments VARCHAR(1000), " +
+                "test_status VARCHAR(50), " +
+                "PRIMARY KEY (issue_id, sub_issue_id)" +
+            ")";
 
-        String createTestRunsTable = """
-            CREATE TABLE IF NOT EXISTS test_runs (
-                issue_id VARCHAR(5) NOT NULL,
-                sub_issue_id VARCHAR(3) NOT NULL,
-                date_time VARCHAR(50) NOT NULL,
-                result VARCHAR(50),
-                comments VARCHAR(1000),
-                runner VARCHAR(255),
-                PRIMARY KEY (issue_id, sub_issue_id, date_time)
-            )
-        """;
+        String createTestRunsTable =
+            "CREATE TABLE IF NOT EXISTS test_runs (" +
+                "issue_id VARCHAR(5) NOT NULL, " +
+                "sub_issue_id VARCHAR(3) NOT NULL, " +
+                "date_time VARCHAR(50) NOT NULL, " +
+                "result VARCHAR(50), " +
+                "comments VARCHAR(1000), " +
+                "runner VARCHAR(255), " +
+                "PRIMARY KEY (issue_id, sub_issue_id, date_time)" +
+            ")";
 
         try (Statement stmt = connection.createStatement()) {
             stmt.execute(createTestsTable);
@@ -62,24 +60,50 @@ public class DatabaseTestRepository implements TestRepository {
 
     @Override
     public void save(Test test) {
-        String sql = """
-            MERGE INTO tests (issue_id, sub_issue_id, name, runner, last_result, 
-                              date_last_run, date_previous_result, file_path, comments, test_status)
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-        """;
+        // First try to update, if no rows affected then insert
+        String updateSql =
+            "UPDATE tests SET name = ?, runner = ?, last_result = ?, " +
+                "date_last_run = ?, date_previous_result = ?, file_path = ?, " +
+                "comments = ?, test_status = ? " +
+            "WHERE issue_id = ? AND sub_issue_id = ?";
 
-        try (PreparedStatement pstmt = connection.prepareStatement(sql)) {
-            pstmt.setString(1, test.getIssueId());
-            pstmt.setString(2, test.getSubIssueId());
-            pstmt.setString(3, test.getName());
-            pstmt.setString(4, test.getRunner());
-            pstmt.setString(5, test.getLastResult().toString());
-            pstmt.setString(6, test.getDateLastRun().toString());
-            pstmt.setString(7, test.getDatePreviousResult().toString());
-            pstmt.setString(8, test.getFilePath());
-            pstmt.setString(9, test.getComments());
-            pstmt.setString(10, test.getTestStatus().toString());
-            pstmt.executeUpdate();
+        String insertSql =
+            "INSERT INTO tests (issue_id, sub_issue_id, name, runner, last_result, " +
+                "date_last_run, date_previous_result, file_path, comments, test_status) " +
+            "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+
+        try {
+            // Try update first
+            try (PreparedStatement pstmt = connection.prepareStatement(updateSql)) {
+                pstmt.setString(1, test.getName());
+                pstmt.setString(2, test.getRunner());
+                pstmt.setString(3, test.getLastResult().toString());
+                pstmt.setString(4, test.getDateLastRun().toString());
+                pstmt.setString(5, test.getDatePreviousResult().toString());
+                pstmt.setString(6, test.getFilePath());
+                pstmt.setString(7, test.getComments());
+                pstmt.setString(8, test.getTestStatus().toString());
+                pstmt.setString(9, test.getIssueId());
+                pstmt.setString(10, test.getSubIssueId());
+                int rowsUpdated = pstmt.executeUpdate();
+
+                if (rowsUpdated == 0) {
+                    // No existing row, do insert
+                    try (PreparedStatement insertStmt = connection.prepareStatement(insertSql)) {
+                        insertStmt.setString(1, test.getIssueId());
+                        insertStmt.setString(2, test.getSubIssueId());
+                        insertStmt.setString(3, test.getName());
+                        insertStmt.setString(4, test.getRunner());
+                        insertStmt.setString(5, test.getLastResult().toString());
+                        insertStmt.setString(6, test.getDateLastRun().toString());
+                        insertStmt.setString(7, test.getDatePreviousResult().toString());
+                        insertStmt.setString(8, test.getFilePath());
+                        insertStmt.setString(9, test.getComments());
+                        insertStmt.setString(10, test.getTestStatus().toString());
+                        insertStmt.executeUpdate();
+                    }
+                }
+            }
         } catch (SQLException e) {
             throw new RuntimeException("Failed to save test", e);
         }
@@ -134,10 +158,9 @@ public class DatabaseTestRepository implements TestRepository {
 
     @Override
     public void saveTestRun(TestRun testRun) {
-        String sql = """
-            INSERT INTO test_runs (issue_id, sub_issue_id, date_time, result, comments, runner)
-            VALUES (?, ?, ?, ?, ?, ?)
-        """;
+        String sql =
+            "INSERT INTO test_runs (issue_id, sub_issue_id, date_time, result, comments, runner) " +
+            "VALUES (?, ?, ?, ?, ?, ?)";
 
         try (PreparedStatement pstmt = connection.prepareStatement(sql)) {
             pstmt.setString(1, testRun.getIssueId());

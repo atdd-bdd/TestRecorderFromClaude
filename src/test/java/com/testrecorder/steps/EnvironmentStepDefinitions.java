@@ -7,10 +7,8 @@ import java.util.Map;
 import static org.junit.jupiter.api.Assertions.*;
 
 public class EnvironmentStepDefinitions {
-    private final TestContext context;
 
-    public EnvironmentStepDefinitions(TestContext context) {
-        this.context = context;
+    public EnvironmentStepDefinitions() {
     }
 
     @When("environment variable is set")
@@ -26,7 +24,7 @@ public class EnvironmentStepDefinitions {
         Map<String, String> expected = dataTable.asMap();
         for (Map.Entry<String, String> entry : expected.entrySet()) {
             String actualValue = EnvironmentUtil.getEnvironmentVariable(entry.getKey());
-            assertEquals(entry.getValue(), actualValue, 
+            assertEquals(entry.getValue(), actualValue,
                         "Environment variable mismatch for: " + entry.getKey());
         }
     }

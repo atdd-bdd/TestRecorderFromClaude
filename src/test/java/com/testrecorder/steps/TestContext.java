@@ -7,6 +7,8 @@ import com.testrecorder.ui.TestTablePanel;
 import java.util.*;
 
 public class TestContext {
+    private static TestContext instance;
+
     private Configuration configuration;
     private TestRepository repository;
     private TestService testService;
@@ -19,13 +21,24 @@ public class TestContext {
     private TestTablePanel testTablePanel;
     private Map<String, String> testFileContents;
 
-    public TestContext() {
+    private TestContext() {
         this.configuration = new Configuration();
         this.repository = new InMemoryTestRepository();
         this.unfilteredTests = new ArrayList<>();
         this.filteredTests = new ArrayList<>();
         this.testFileContents = new HashMap<>();
         initializeProviders();
+    }
+
+    public static TestContext getInstance() {
+        if (instance == null) {
+            instance = new TestContext();
+        }
+        return instance;
+    }
+
+    public static void reset() {
+        instance = new TestContext();
     }
 
     private void initializeProviders() {

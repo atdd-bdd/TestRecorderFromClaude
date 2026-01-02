@@ -115,7 +115,10 @@ public class Test {
 
     public void updateFromTestRun(TestRun testRun) {
         if (testRun.getDateTime().isAfter(this.dateLastRun)) {
-            this.datePreviousResult = this.dateLastRun;
+            // Only update datePreviousResult when the result changes
+            if (this.lastResult != testRun.getResult()) {
+                this.datePreviousResult = this.dateLastRun;
+            }
             this.dateLastRun = testRun.getDateTime();
             this.lastResult = testRun.getResult();
             this.runner = testRun.getRunner();

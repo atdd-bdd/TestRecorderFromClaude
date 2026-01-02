@@ -1,69 +1,77 @@
 package com.testrecorder.steps;
 
 import com.testrecorder.domain.*;
+import com.testrecorder.repository.DatabaseTestRepository;
+import com.testrecorder.repository.InMemoryTestRepository;
+import com.testrecorder.service.*;
 import io.cucumber.datatable.DataTable;
 import io.cucumber.java.en.*;
+import java.sql.*;
 import java.util.*;
 import static org.junit.jupiter.api.Assertions.*;
 
 public class FilterStepDefinitions {
-    private final TestContext context;
+    private List<Test> filteredTests;
 
-    public FilterStepDefinitions(TestContext context) {
-        this.context = context;
+    public FilterStepDefinitions() {
+        this.filteredTests = new ArrayList<>();
+    }
+
+    private void ensureRepository() throws SQLException {
+        if (SharedState.repository instanceof InMemoryTestRepository) {
+            SharedState.repository = new DatabaseTestRepository(SharedState.configuration);
+            SharedState.initializeProviders();
+        }
     }
 
     @Given("unfiltered tests are")
-    public void unfiltered_tests_are(DataTable dataTable) {
+    public void unfiltered_tests_are(DataTable dataTable) throws SQLException {
+        ensureRepository();
+        // Clear existing data first
+        SharedState.testService.deleteAllTests();
+
         List<Map<String, String>> rows = dataTable.asMaps();
-        List<Test> tests = new ArrayList<>();
-        
+
         for (Map<String, String> row : rows) {
             Test test = createTestFromRow(row);
-            tests.add(test);
-            context.getRepository().save(test);
+            SharedState.repository.save(test);
         }
-        
-        context.setUnfilteredTests(tests);
     }
 
     @When("filtered by")
-    public void filtered_by(DataTable dataTable) {
+    public void filtered_by(DataTable dataTable) throws SQLException {
+        ensureRepository();
         Map<String, String> filters = dataTable.asMap();
-        
+
         boolean includeActive = Boolean.parseBoolean(filters.getOrDefault("Active", "true"));
         boolean includeInactive = Boolean.parseBoolean(filters.getOrDefault("Inactive", "true"));
         boolean includeRetired = Boolean.parseBoolean(filters.getOrDefault("Retired", "true"));
-        
-        List<Test> filtered = context.getTestService().filterTests(includeActive, includeInactive, includeRetired);
-        context.setFilteredTests(filtered);
+
+        filteredTests = SharedState.testService.filterTests(includeActive, includeInactive, includeRetired);
     }
 
     @Then("filtered tests are")
     public void filtered_tests_are(DataTable dataTable) {
         List<Map<String, String>> expectedRows = dataTable.asMaps();
-        List<Test> actualTests = context.getFilteredTests();
 
-        assertEquals(expectedRows.size(), actualTests.size(), 
-                "Expected " + expectedRows.size() + " tests but found " + actualTests.size());
+        assertEquals(expectedRows.size(), filteredTests.size(),
+                "Expected " + expectedRows.size() + " tests but found " + filteredTests.size());
 
-        // Check if this is a selective comparison (fewer columns)
         boolean isSelectiveComparison = expectedRows.get(0).size() < 10;
 
         for (Map<String, String> expectedRow : expectedRows) {
             String issueId = expectedRow.get("Issue ID");
             String subIssueId = getSubIssueId(expectedRow);
 
-            Optional<Test> testOpt = actualTests.stream()
+            Optional<Test> testOpt = filteredTests.stream()
                     .filter(t -> t.matchesKey(issueId, subIssueId))
                     .findFirst();
 
             assertTrue(testOpt.isPresent(), "Test not found: " + issueId + "/" + subIssueId);
-            
+
             Test actualTest = testOpt.get();
-            
+
             if (isSelectiveComparison) {
-                // Only check the fields present in the expected data
                 String[] fields = expectedRow.keySet().toArray(new String[0]);
                 Test expectedTest = createTestFromRow(expectedRow);
                 assertTrue(actualTest.selectiveEquals(expectedTest, fields),
@@ -81,7 +89,7 @@ public class FilterStepDefinitions {
         String filePath = row.getOrDefault("File Path", "");
 
         Test test = new Test(issueId, subIssueId, name, filePath);
-        
+
         if (row.containsKey("Runner")) {
             test.setRunner(row.get("Runner"));
         }
@@ -107,7 +115,7 @@ public class FilterStepDefinitions {
     private void assertTestMatches(Map<String, String> expected, Test actual) {
         assertEquals(expected.get("Issue ID"), actual.getIssueId());
         assertEquals(getSubIssueId(expected), actual.getSubIssueId());
-        
+
         if (expected.containsKey("Name")) {
             assertEquals(expected.get("Name"), actual.getName());
         }

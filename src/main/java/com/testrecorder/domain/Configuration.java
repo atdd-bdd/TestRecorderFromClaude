@@ -112,20 +112,24 @@ public class Configuration {
 
     public void save(String filename) throws IOException {
         Properties props = new Properties();
-        props.setProperty("rootFilePath", rootFilePath);
+        props.setProperty("rootFilePath", nullToEmpty(rootFilePath));
         props.setProperty("useTestDoubleForDateTime", String.valueOf(useTestDoubleForDateTime));
         props.setProperty("useTestDoubleForRunner", String.valueOf(useTestDoubleForRunner));
-        props.setProperty("valueTestDoubleForDateTime", valueTestDoubleForDateTime);
-        props.setProperty("valueTestDoubleForRunner", valueTestDoubleForRunner);
+        props.setProperty("valueTestDoubleForDateTime", nullToEmpty(valueTestDoubleForDateTime));
+        props.setProperty("valueTestDoubleForRunner", nullToEmpty(valueTestDoubleForRunner));
         props.setProperty("formNotCloseOnExit", String.valueOf(formNotCloseOnExit));
-        props.setProperty("databaseURL", databaseURL);
-        props.setProperty("databaseJDBCDriver", databaseJDBCDriver);
-        props.setProperty("databasePassword", databasePassword);
-        props.setProperty("databaseUserID", databaseUserID);
+        props.setProperty("databaseURL", nullToEmpty(databaseURL));
+        props.setProperty("databaseJDBCDriver", nullToEmpty(databaseJDBCDriver));
+        props.setProperty("databasePassword", nullToEmpty(databasePassword));
+        props.setProperty("databaseUserID", nullToEmpty(databaseUserID));
 
         try (FileOutputStream fos = new FileOutputStream(filename)) {
             props.store(fos, "Test Recorder Configuration");
         }
+    }
+
+    private String nullToEmpty(String value) {
+        return value == null ? "" : value;
     }
 
     public void load(String filename) throws IOException {

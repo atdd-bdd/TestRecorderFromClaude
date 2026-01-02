@@ -8,10 +8,8 @@ import java.util.Map;
 import static org.junit.jupiter.api.Assertions.*;
 
 public class DomainTermsStepDefinitions {
-    private final TestContext context;
 
-    public DomainTermsStepDefinitions(TestContext context) {
-        this.context = context;
+    public DomainTermsStepDefinitions() {
     }
 
     @When("Test Results are")
@@ -31,8 +29,8 @@ public class DomainTermsStepDefinitions {
             String value = row.get("Value");
             boolean expectedValid = row.get("Valid").equalsIgnoreCase("Yes");
             boolean actualValid = IssueId.isValid(value);
-            
-            assertEquals(expectedValid, actualValid, 
+
+            assertEquals(expectedValid, actualValid,
                         "IssueID validation failed for: " + value + " (" + row.get("Notes") + ")");
         }
     }
@@ -44,8 +42,8 @@ public class DomainTermsStepDefinitions {
             String value = row.get("Value");
             boolean expectedValid = row.get("Valid").equalsIgnoreCase("Yes");
             boolean actualValid = SubIssueId.isValid(value);
-            
-            assertEquals(expectedValid, actualValid, 
+
+            assertEquals(expectedValid, actualValid,
                         "SubIssueID validation failed for: " + value + " (" + row.get("Notes") + ")");
         }
     }
@@ -57,8 +55,8 @@ public class DomainTermsStepDefinitions {
             String value = row.get("Value");
             boolean expectedValid = row.get("Valid").equalsIgnoreCase("Yes");
             boolean actualValid = TestDate.isValid(value);
-            
-            assertEquals(expectedValid, actualValid, 
+
+            assertEquals(expectedValid, actualValid,
                         "TestDate validation failed for: " + value + " (" + row.get("Notes") + ")");
         }
     }
@@ -80,8 +78,8 @@ public class DomainTermsStepDefinitions {
             String value = row.get("Value");
             String expectedNewValue = row.get("New Value");
             String actualNewValue = Name.validate(value);
-            
-            assertEquals(expectedNewValue, actualNewValue, 
+
+            assertEquals(expectedNewValue, actualNewValue,
                         "Name validation failed for: " + value + " (" + row.get("Notes") + ")");
         }
     }
@@ -93,8 +91,8 @@ public class DomainTermsStepDefinitions {
             String value = row.get("Value");
             String expectedNewValue = row.get("New Value");
             String actualNewValue = MyString.validate(value);
-            
-            assertEquals(expectedNewValue, actualNewValue, 
+
+            assertEquals(expectedNewValue, actualNewValue,
                         "MyString validation failed for: " + value + " (" + row.get("Notes") + ")");
         }
     }
