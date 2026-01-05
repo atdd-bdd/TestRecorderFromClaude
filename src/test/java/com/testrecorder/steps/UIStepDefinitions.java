@@ -82,15 +82,57 @@ public class UIStepDefinitions {
     }
 
     @When("test table swing is shown with test run data")
-    public void test_table_swing_is_shown_with_test_run_data(DataTable dataTable) throws SQLException {
+    public void test_table_swing_is_shown_with_test_run_data(DataTable dataTable) throws Exception {
         ensureRepository();
         Map<String, String> data = dataTable.asMap();
 
-        TestResult result = TestResult.fromString(data.get("Result"));
+        String result = data.get("Result");
         String comments = data.get("Comments");
 
-        String[] selectedKey = getSelectedTest();
-        testService.runTest(selectedKey[0], selectedKey[1], result, comments);
+        // Build instruction message
+        StringBuilder message = new StringBuilder();
+        message.append("Please enter the following test run data:\n\n");
+        message.append("Result: ").append(result).append("\n");
+        message.append("Comments: ").append(comments).append("\n\n");
+        message.append("1. Select the test in the table\n");
+        message.append("2. Click 'Run Test' button\n");
+        message.append("3. Enter the data above\n");
+        message.append("4. Click 'Run' to save\n");
+        message.append("5. Close the application when done");
+
+        // Set look and feel to system default
+        try {
+            UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+        } catch (Exception e) {
+            // Use default look and feel
+        }
+
+        // Show instruction dialog
+        JOptionPane.showMessageDialog(null,
+            message.toString(),
+            "Manual Test Instructions",
+            JOptionPane.INFORMATION_MESSAGE);
+
+        // Create and show the frame on the EDT
+        final Object lock = new Object();
+        SwingUtilities.invokeLater(() -> {
+            testRecorderFrame = new TestRecorderFrame(testService, true);
+            testRecorderFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+            testRecorderFrame.addWindowListener(new java.awt.event.WindowAdapter() {
+                @Override
+                public void windowClosed(java.awt.event.WindowEvent e) {
+                    synchronized (lock) {
+                        lock.notify();
+                    }
+                }
+            });
+            testRecorderFrame.showAndRefresh();
+        });
+
+        // Wait for the user to close the window
+        synchronized (lock) {
+            lock.wait();
+        }
     }
 
     @Then("test table should show that data")
