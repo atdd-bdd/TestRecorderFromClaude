@@ -4,6 +4,8 @@ import com.testrecorder.domain.*;
 import com.testrecorder.repository.DatabaseTestRepository;
 import com.testrecorder.service.*;
 import com.testrecorder.ui.TestTablePanel;
+import com.testrecorder.ui.TestRecorderFrame;
+import javax.swing.*;
 import io.cucumber.datatable.DataTable;
 import io.cucumber.java.en.*;
 import java.sql.*;
@@ -17,6 +19,7 @@ public class UIStepDefinitions {
     private DateTimeProvider dateTimeProvider;
     private RunnerProvider runnerProvider;
     private TestTablePanel testTablePanel;
+    private TestRecorderFrame testRecorderFrame;
 
     public UIStepDefinitions() {
         this.configuration = new Configuration();
@@ -46,11 +49,36 @@ public class UIStepDefinitions {
     }
 
     @When("test table swing is shown")
-    public void test_table_swing_is_shown() throws SQLException {
+    public void test_table_swing_is_shown() throws Exception {
         ensureRepository();
-        testTablePanel = new TestTablePanel();
-        List<Test> tests = testService.getAllTests();
-        testTablePanel.loadTests(tests);
+
+        // Set look and feel to system default
+        try {
+            UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+        } catch (Exception e) {
+            // Use default look and feel
+        }
+
+        // Create and show the frame on the EDT
+        final Object lock = new Object();
+        SwingUtilities.invokeLater(() -> {
+            testRecorderFrame = new TestRecorderFrame(testService, true);
+            testRecorderFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+            testRecorderFrame.addWindowListener(new java.awt.event.WindowAdapter() {
+                @Override
+                public void windowClosed(java.awt.event.WindowEvent e) {
+                    synchronized (lock) {
+                        lock.notify();
+                    }
+                }
+            });
+            testRecorderFrame.showAndRefresh();
+        });
+
+        // Wait for the user to close the window
+        synchronized (lock) {
+            lock.wait();
+        }
     }
 
     @When("test table swing is shown with test run data")
