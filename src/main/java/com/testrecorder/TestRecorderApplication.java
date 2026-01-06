@@ -85,7 +85,7 @@ public class TestRecorderApplication {
         TestService testService = new TestService(repository, dateTimeProvider, runnerProvider);
 
         // Create and show UI
-        TestRecorderFrame frame = new TestRecorderFrame(testService, databaseConnected);
+        TestRecorderFrame frame = new TestRecorderFrame(testService, databaseConnected, config.getRootFilePath());
         frame.showAndRefresh();
 
         System.out.println("Test Recorder Application started successfully");

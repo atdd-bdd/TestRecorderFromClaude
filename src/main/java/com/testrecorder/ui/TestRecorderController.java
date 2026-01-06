@@ -2,11 +2,16 @@ package com.testrecorder.ui;
 
 import com.testrecorder.domain.*;
 import com.testrecorder.service.TestService;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.List;
 import java.util.Optional;
 
 public class TestRecorderController {
     private final TestService testService;
+    private final String rootFilePath;
     private TestRecorderFrame frame;
     private Test selectedTest;
     private boolean showActive = true;
@@ -14,7 +19,12 @@ public class TestRecorderController {
     private boolean showRetired = false;
 
     public TestRecorderController(TestService testService) {
+        this(testService, "");
+    }
+
+    public TestRecorderController(TestService testService, String rootFilePath) {
         this.testService = testService;
+        this.rootFilePath = rootFilePath != null ? rootFilePath : "";
     }
 
     public void setFrame(TestRecorderFrame frame) {
@@ -69,7 +79,10 @@ public class TestRecorderController {
             return;
         }
 
-        RunTestDialog dialog = new RunTestDialog(frame, selectedTest);
+        // Read file content
+        String fileContent = readTestFile(selectedTest.getFilePath());
+
+        RunTestDialog dialog = new RunTestDialog(frame, selectedTest, fileContent);
         if (dialog.showDialog()) {
             try {
                 testService.runTest(
@@ -83,6 +96,26 @@ public class TestRecorderController {
                 showError("Error running test: " + e.getMessage());
             }
         }
+    }
+
+    private String readTestFile(String filePath) {
+        if (filePath == null || filePath.isEmpty()) {
+            return null;
+        }
+        try {
+            Path path = Paths.get(rootFilePath, filePath);
+            if (Files.exists(path)) {
+                return Files.readString(path);
+            }
+            // Try without root path
+            path = Paths.get(filePath);
+            if (Files.exists(path)) {
+                return Files.readString(path);
+            }
+        } catch (IOException e) {
+            // Ignore, return null
+        }
+        return null;
     }
 
     public void viewSelectedResults() {

@@ -15,11 +15,15 @@ public class TestRecorderFrame extends JFrame {
     private boolean databaseConnected;
 
     public TestRecorderFrame(TestService testService, boolean databaseConnected) {
+        this(testService, databaseConnected, "");
+    }
+
+    public TestRecorderFrame(TestService testService, boolean databaseConnected, String rootFilePath) {
         super("Test Recorder");
         this.databaseConnected = databaseConnected;
 
         // Create controller
-        this.controller = new TestRecorderController(testService);
+        this.controller = new TestRecorderController(testService, rootFilePath);
 
         // Create components
         this.tablePanel = new TestTablePanel();

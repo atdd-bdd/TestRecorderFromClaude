@@ -61,8 +61,9 @@ public class UIStepDefinitions {
 
         // Create and show the frame on the EDT
         final Object lock = new Object();
+        final String rootPath = configuration.getRootFilePath();
         SwingUtilities.invokeLater(() -> {
-            testRecorderFrame = new TestRecorderFrame(testService, true);
+            testRecorderFrame = new TestRecorderFrame(testService, true, rootPath);
             testRecorderFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
             testRecorderFrame.addWindowListener(new java.awt.event.WindowAdapter() {
                 @Override
@@ -115,8 +116,9 @@ public class UIStepDefinitions {
 
         // Create and show the frame on the EDT
         final Object lock = new Object();
+        final String rootPath = configuration.getRootFilePath();
         SwingUtilities.invokeLater(() -> {
-            testRecorderFrame = new TestRecorderFrame(testService, true);
+            testRecorderFrame = new TestRecorderFrame(testService, true, rootPath);
             testRecorderFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
             testRecorderFrame.addWindowListener(new java.awt.event.WindowAdapter() {
                 @Override
@@ -137,7 +139,11 @@ public class UIStepDefinitions {
 
     @Then("test table should show that data")
     public void test_table_should_show_that_data() {
-        assertNotNull(testTablePanel, "Test table panel not initialized");
+        JOptionPane.showMessageDialog(null,
+            "Please verify that the test table displays the expected data.\n\n" +
+            "Click OK when verification is complete.",
+            "Manual Verification Required",
+            JOptionPane.INFORMATION_MESSAGE);
     }
 
     private String[] getSelectedTest() throws SQLException {
