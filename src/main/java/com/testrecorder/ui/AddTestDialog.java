@@ -11,6 +11,7 @@ public class AddTestDialog extends JDialog {
     private JTextField subIssueIdField;
     private JTextField nameField;
     private JTextField filePathField;
+    private JButton browseButton;
     private JButton addButton;
     private JButton cancelButton;
     private boolean confirmed = false;
@@ -34,8 +35,10 @@ public class AddTestDialog extends JDialog {
         nameField = new JTextField(30);
         nameField.setToolTipText("Test name");
 
-        filePathField = new JTextField(30);
+        filePathField = new JTextField(25);
         filePathField.setToolTipText("Path to test file (optional)");
+
+        browseButton = new JButton("Browse...");
 
         addButton = new JButton("Add");
         cancelButton = new JButton("Cancel");
@@ -92,9 +95,16 @@ public class AddTestDialog extends JDialog {
         mainPanel.add(new JLabel("File Path:"), gbc);
 
         gbc.gridx = 1;
-        gbc.gridwidth = 2;
+        gbc.gridwidth = 1;
         gbc.fill = GridBagConstraints.HORIZONTAL;
+        gbc.weightx = 1.0;
         mainPanel.add(filePathField, gbc);
+
+        gbc.gridx = 2;
+        gbc.gridwidth = 1;
+        gbc.fill = GridBagConstraints.NONE;
+        gbc.weightx = 0;
+        mainPanel.add(browseButton, gbc);
 
         // Buttons
         JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
@@ -119,6 +129,23 @@ public class AddTestDialog extends JDialog {
         });
 
         cancelButton.addActionListener(e -> dispose());
+
+        browseButton.addActionListener(e -> {
+            JFileChooser fileChooser = new JFileChooser();
+            fileChooser.setDialogTitle("Select Test File");
+            fileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
+
+            // Start from current directory or file path if set
+            String currentPath = filePathField.getText().trim();
+            if (!currentPath.isEmpty()) {
+                fileChooser.setCurrentDirectory(new java.io.File(currentPath).getParentFile());
+            }
+
+            int result = fileChooser.showOpenDialog(this);
+            if (result == JFileChooser.APPROVE_OPTION) {
+                filePathField.setText(fileChooser.getSelectedFile().getPath());
+            }
+        });
 
         // Enter key in any field triggers Add
         Action addAction = new AbstractAction() {
