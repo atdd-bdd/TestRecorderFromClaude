@@ -1,0 +1,57 @@
+User Prompts / Commands from Claude Code Session
+=================================================
+
+1. what is the hsqldb connection string?
+
+2. how do I start the hsqldb server
+
+3. change the databaseURL to that value in all the feature files
+
+4. update the default databaseURL in Configuration.java too
+
+5. I am starting up the database with java -cp "C:\Program Files (x86)\OpenOffice 4\program\classes\hsqldb.jar" org.hsqldb.Server -database.0 file:testrecorder -dbname.0 testrecorder
+   Why am I getting an EOF error?
+
+6. what hsqldb version is in pom.xml
+
+7. download that version
+
+8. run mvn test to verify changes work
+
+9. implement the step 'user closes application
+
+10. the manual ui tests do not use the test doubles for runner and datetime. The values are in the configuration.
+
+11. implement the step definition Test Status filter includes
+
+12. commit and push
+
+13. run the tests with the server running
+
+14. run the automated UI tests
+
+15. this was working in the previous automation. Can you revert back to the last commit?
+
+16. add how I used Claude.md to git
+
+17. now undo changes to automated UI testing
+
+18. show what changes you have made since the last commit
+
+19. There is a TimerTask issue. The state is not available
+
+20. run the automated UI tests again
+
+21. commit the pom.xml fix and push
+
+22. run all tests to verify everything works
+
+23. commit and push
+
+24. add AutomatedUITestRunner.java to git
+
+25. remove TestRecorderFromClaude.zip from the project
+
+26. commit and push
+
+27. can you create a text file that contains a record of all the prompts / commands that I have typed
