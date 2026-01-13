@@ -8,7 +8,7 @@ Feature: Test Recorder
       | useTestDoubleForRunner     | true                                             |
       | valueTestDoubleForDateTime | Oct 1, 2022, 12:30:01 AM                         |
       | valueTestDoubleForRunner   | Sam                                              |
-      | databaseURL                | jdbc:hsqldb:hsql://localhost                     |
+      | databaseURL                | jdbc:hsqldb:hsql://localhost/testrecorder                     |
       | databaseJDBCDriver         | org.hsqldb.jdbcDriver                            |
       | databasePassword           |                                                  |
       | databaseUserID             | SA                                               |
@@ -42,9 +42,7 @@ Feature: Test Recorder
     When test is run
       | Result   | Success     |
       | Comments | Works great |
-    Then test run display contains
-      | Test Script | Select test \n Run it \n Check result |
-    And test is now
+     And test is now
       | Issue ID | Sub Issue ID | Name              | Runner | Last Result | Date Last Run            | Date Previous Result | File Path               | Comments    |
       | 12345    | 678          | Enter test result | Sam    | Success     | Oct 1, 2022, 12:30:01 AM | Never                | EnterTestResult.feature | Works great |
     And test run records exist

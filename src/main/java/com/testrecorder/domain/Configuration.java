@@ -23,7 +23,7 @@ public class Configuration {
         this.valueTestDoubleForDateTime = "";
         this.valueTestDoubleForRunner = "";
         this.formNotCloseOnExit = false;
-        this.databaseURL = "jdbc:hsqldb:hsql://localhost";
+        this.databaseURL = "jdbc:hsqldb:hsql://localhost/testrecorder";
         this.databaseJDBCDriver = "org.hsqldb.jdbcDriver";
         this.databasePassword = "";
         this.databaseUserID = "SA";

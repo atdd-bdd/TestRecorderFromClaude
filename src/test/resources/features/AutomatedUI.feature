@@ -9,7 +9,7 @@ Feature: Automated UI Testing
       | valueTestDoubleForDateTime | Oct 1, 2022, 12:30:01 AM                         |
       | valueTestDoubleForRunner   | Sam                                              |
       | formNotCloseOnExit         | true                                             |
-      | databaseURL                | jdbc:hsqldb:hsql://localhost                     |
+      | databaseURL                | jdbc:hsqldb:hsql://localhost/testrecorder                     |
       | databaseJDBCDriver         | org.hsqldb.jdbcDriver                            |
       | databasePassword           |                                                  |
       | databaseUserID             | SA                                               |
@@ -28,8 +28,8 @@ Feature: Automated UI Testing
       | Sub Issue ID | 678                     |
       | File Path    | EnterTestResult.feature |
     Then automated tests displayed are
-      | Issue ID | Sub Issue ID | Name              | Last Result |
-      | 12345    | 678          | Enter test result | Failure     |
+      | Issue ID | SubIssueID | Name              | Runner  | Last Result | Date Last Run | Date Previous Result | File Path               |
+      | 12345    | 678        | Enter test result | No Name | Failure     | Never         | Never                | EnterTestResult.feature |
     And automated application is closed
 
   @automated-ui
@@ -50,8 +50,8 @@ Feature: Automated UI Testing
       | Result   | Success     |
       | Comments | Works great |
     Then automated tests displayed are
-      | Issue ID | SubIssueID | Name              | Last Result |
-      | 12345    | 678        | Enter test result | Success     |
+      | Issue ID | SubIssueID | Name              | Runner  | Last Result | Date Last Run             | Date Previous Result | File Path               |
+      | 12345    | 678        | Enter test result | Sam     | Success     | Oct 1, 2022, 12:30:01 AM  | Never                | EnterTestResult.feature |
     And automated application is closed
 
   @automated-ui
@@ -63,6 +63,9 @@ Feature: Automated UI Testing
       | 12347    | 234        | Mame c | Jane   | Success     | Oct 1, 2022, 12:30:02 AM | Sep 30, 2022, 12:30:02 AM | EnterTestResult.feature | Works great | Active      |
       | 12344    | 456        | Name D | Wanda  | Failure     | Oct 1, 2022, 12:30:03 AM | Sep 30, 2022, 12:30:03 AM | EnterTestResult.feature | Works great | Retired     |
     And automated application is started
+    When automated Test Status filter includes
+      | Active   |
+      | Inactive |
     Then automated tests displayed are
       | Issue ID | SubIssueID | Name   | Last Result |
       | 12345    | 123        | Name a | Success     |

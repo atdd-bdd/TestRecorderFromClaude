@@ -8,7 +8,7 @@ Feature: Entities
       | useTestDoubleForRunner     | true                                             |
       | valueTestDoubleForDateTime | Oct 1, 2022, 12:30:01 AM                         |
       | valueTestDoubleForRunner   | Sam                                              |
-      | databaseURL                | jdbc:hsqldb:hsql://localhost                     |
+      | databaseURL                | jdbc:hsqldb:hsql://localhost/testrecorder                     |
       | databaseJDBCDriver         | org.hsqldb.jdbcDriver                            |
       | databasePassword           |                                                  |
       | databaseUserID             | SA                                               |
@@ -22,7 +22,7 @@ Feature: Entities
       | valueTestDoubleForDateTime | Oct 1, 2022, 12:30:02 AM                         |
       | valueTestDoubleForRunner   | Jane                                             |
       | formNotCloseOnExit         | true                                             |
-      | databaseURL                | jdbc:hsqldb:hsql://localhost                     |
+      | databaseURL                | jdbc:hsqldb:hsql://localhost/testrecorder                     |
       | databaseJDBCDriver         | org.hsqldb.jdbcDriver                            |
       | databasePassword           |                                                  |
       | databaseUserID             | SA                                               |
@@ -36,7 +36,7 @@ Feature: Entities
       | valueTestDoubleForDateTime | Oct 1, 2022, 12:30:02 AM                         |
       | valueTestDoubleForRunner   | Jane                                             |
       | formNotCloseOnExit         | true                                             |
-      | databaseURL                | jdbc:hsqldb:hsql://localhost                     |
+      | databaseURL                | jdbc:hsqldb:hsql://localhost/testrecorder                     |
       | databaseJDBCDriver         | org.hsqldb.jdbcDriver                            |
       | databasePassword           |                                                  |
       | databaseUserID             | SA                                               |
