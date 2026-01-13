@@ -30,6 +30,10 @@ I had to add a couple of steps to the manual tests.   I wanted it to show a dial
 
 I asked it to create automated UI tests from the manual tests.  It used Robot from swing . That seemed to work fine.   
 
+#### Issue 6 - The Compiler
+
+Claude decided to switch to Java 11, even though the lastest Java was set in the project file for IntelliJ.   It did correct some code so that everything would compile under Java 11.  
+
 #### Performance
 
 I was doing this on an older laptop.  I'm presuming that much of the processing is done in the cloud and only the commands running locally.   It spent much of the time in "Thinking" mode (with a number of other synonyms displayed).   It displayed reasonable prompts for the next steps I might ask it to do.    I'll try doing it on a souped-up desktop and see if that makes any difference.  

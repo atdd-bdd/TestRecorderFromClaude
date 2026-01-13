@@ -254,6 +254,38 @@ public class AutomatedUIStepDefinitions {
         pause(500);
     }
 
+    @When("automated Test Status filter includes")
+    public void automated_test_status_filter_includes(DataTable dataTable) throws Exception {
+        List<String> statusesToInclude = dataTable.asList();
+
+        // Set Active checkbox
+        setCheckboxState("Active", statusesToInclude.contains("Active"));
+
+        // Set Inactive checkbox
+        setCheckboxState("Inactive", statusesToInclude.contains("Inactive"));
+
+        // Set Retired checkbox
+        setCheckboxState("Retired", statusesToInclude.contains("Retired"));
+
+        // Wait for filter to apply
+        pause(300);
+    }
+
+    private void setCheckboxState(String checkboxText, boolean shouldBeSelected) {
+        JCheckBoxFixture checkbox = frameFixture.checkBox(new GenericTypeMatcher<JCheckBox>(JCheckBox.class) {
+            @Override
+            protected boolean isMatching(JCheckBox cb) {
+                return checkboxText.equals(cb.getText());
+            }
+        });
+
+        if (shouldBeSelected && !checkbox.target().isSelected()) {
+            checkbox.click();
+        } else if (!shouldBeSelected && checkbox.target().isSelected()) {
+            checkbox.click();
+        }
+    }
+
     @Then("automated tests displayed are")
     public void automated_tests_displayed_are(DataTable dataTable) throws Exception {
         List<Map<String, String>> expectedRows = dataTable.asMaps();
